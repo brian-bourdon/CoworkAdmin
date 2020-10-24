@@ -34,7 +34,10 @@ export function TableData(props) {
 
     const handleSearch = (e) => {
         let regex = new RegExp( e.target.value.toLowerCase(), 'g');
-        setFilterData(data.filter(l => l.nom.toLowerCase().match(regex)))
+        console.log(data)
+        console.log(data.filter(l => l.firstname.toLowerCase().match(regex)))
+        if(uri !== "user") setFilterData(data.filter(l => l.nom.toLowerCase().match(regex)))
+        else setFilterData(data.filter(l => l.firstname.toLowerCase().match(regex)))
     }
     useEffect(() => {
         let uriTmp = ""
@@ -59,6 +62,10 @@ export function TableData(props) {
             uriTmp = "events"
             schema = ["nom", "description", "horaire_debut", "horaire_fin", "nb_places", "id_space"]
         }
+        else if(path === "/utilisateurs" || path === "/") {
+            uriTmp = "user"
+            schema = ["firstname", "lastname", "date_naissance", "email", "pwd", "admin"]
+        }
         setUri(uriTmp)
         setSchema(schema)
 
@@ -69,7 +76,6 @@ export function TableData(props) {
         })
         .catch(err => console.log(err))
      }, [uri, successModification, successAdd]);
-
     return (
         <>
         <Row>
@@ -81,7 +87,7 @@ export function TableData(props) {
                     <Form.Control placeholder={l} onKeyUp={(e) => handleFormAdd(l, e)} />
                     </Col>)}
                     <Col>
-                    <Button variant="success" onClick={() => addItem(formAdd, uri, handleSuccessAdd)} ><FontAwesomeIcon icon={faCheck}/></Button>
+                    <Button variant="success" onClick={() => addItem(formAdd, uri, handleSuccessAdd)} disabled={Object.values(formAdd).map(v => {let i = 0; if(v.trim() === "") i++; return i}).includes(1) || Object.keys(schema).length !== Object.keys(formAdd).length}><FontAwesomeIcon icon={faCheck}/></Button>
                     </Col>
                 </Form.Row>
                 </Form>
@@ -102,7 +108,7 @@ export function TableData(props) {
                 <Table striped bordered hover>
                     <thead>
                         <tr>
-                            {Object.keys(filterData[0]).filter(k => k !== "id").map(v => (<th>{upperCaseFirst(v)}</th>))}
+                            {Object.keys(filterData[0]).filter(k => k !== "id").map((v,i) => (<th key={i}>{upperCaseFirst(v)}</th>))}
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -111,7 +117,7 @@ export function TableData(props) {
                             let tmp = {...l}
                             delete tmp.id
                             return (
-                            <TableLine data={{line: tmp, handleSuccessModification, uri, id: l.id}}/>
+                            <TableLine key={l.id} data={{line: tmp, handleSuccessModification, uri, id: l.id}}/>
                             )}
                         )}
                     </tbody>
@@ -164,7 +170,7 @@ function TableLine(props) {
     
     return (
         <tr>
-            {Object.keys(props.data.line).map(k => <td>{ <Form.Control defaultValue={props.data.line[k]} disabled={disabledModif} onKeyUp={(v) => handleForm(k, v)}/>}</td>)}
+            {Object.keys(props.data.line).map((k,i) => <td key={i}>{ <Form.Control defaultValue={props.data.line[k]} disabled={disabledModif} onKeyUp={(v) => handleForm(k, v)}/>}</td>)}
             <th>
                 <div className="text-center">
                     <Button variant="warning" className="mr-2" onClick={() => handleDisabledModif()}>{disabledModif ? "Modifier" : "Annuler"}</Button>

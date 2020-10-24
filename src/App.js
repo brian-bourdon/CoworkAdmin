@@ -126,8 +126,8 @@ function App() {
                 <Main extanded={extanded}>
                     <Header data={{history, location, setConnected}}/>
                     <Container fluid className="pr-20 pl-20" style={{paddingTop: "2em", paddingBottom: "2em"}}>
-                      <Route path="/" exact component={props => <Home data={{load}}/>} />
-                      <Route path="/utilisateurs" component={props => <Home data={{load}}/>} />
+                      <Route path="/" exact component={props => <TableData data={{load}}/>} />
+                      <Route path="/utilisateurs" component={props => <TableData data={{load}}/>} />
                       <Route path="/espaces" component={props => <TableData data={{load}}/>} />
                       <Route path="/espaces_privatifs" component={props => <TableData data={{load}}/>} />
                       <Route path="/equipements" component={props => <TableData data={{load}}/>} />
