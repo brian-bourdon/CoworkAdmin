@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import {getCookie, deleteCookie, upperCaseFirst} from '../util/util';
+import { propTypes } from 'react-bootstrap/esm/Image';
+import {useHistory} from "react-router-dom";
 
 const deleteUser = () => {
     deleteCookie("id", "/")
@@ -11,7 +13,8 @@ const deleteUser = () => {
     deleteCookie("admin", "/")
   }
 
-export function Deconnection(setConnected) {
-    deleteUser()
-    setConnected(false)
+export function Deconnection(setConnected, history) {
+  deleteUser()
+  setConnected(null)
+  history.push('/')
 }

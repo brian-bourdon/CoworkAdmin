@@ -144,7 +144,7 @@ function CustomerReservations(props) {
                         aria-hidden="true"
                         style={{width: "5em", height: "5em"}}
                         /></div>}
-                        {!isLoading.privative && activeTab === "privative" && <ListReservations data={{data: privative, setIsDeleted, type: "privative"}}/>}
+                        {!isLoading.privative && activeTab === "privative" && <ListReservations data={{data: privative, setIsDeleted, type: "res_privative"}}/>}
                         </Col>
                     </Row>
                 </Tab>
@@ -162,7 +162,7 @@ function CustomerReservations(props) {
                             aria-hidden="true"
                             stye={{width: "5em", height: "5em"}}
                             /></div>}
-                        {!isLoading.equipment && activeTab === "equipment" && <ListReservations data={{data: equipment, setIsDeleted, type: "equipment"}}/>}
+                        {!isLoading.equipment && activeTab === "equipment" && <ListReservations data={{data: equipment, setIsDeleted, type: "res_equipment"}}/>}
                         </Col>
                     </Row>
                 </Tab>
@@ -181,7 +181,7 @@ function CustomerReservations(props) {
                             aria-hidden="true"
                             style={{width: "5em", height: "5em"}}
                             /></div>}
-                        {!isLoading.meal && activeTab === "meal" && <ListReservations data={{data: meal, setIsDeleted, type: "meal"}}/>}
+                        {!isLoading.meal && activeTab === "meal" && <ListReservations data={{data: meal, setIsDeleted, type: "res_meal"}}/>}
                         </Col>
                     </Row>
                 </Tab>
@@ -200,7 +200,7 @@ function CustomerReservations(props) {
                             aria-hidden="true"
                             style={{width: "5em", height: "5em"}}
                             /></div>}
-                        {!isLoading.events && activeTab === "events" && <ListReservations data={{data: events, setIsDeleted, type: "events"}}/>}
+                        {!isLoading.events && activeTab === "events" && <ListReservations data={{data: events, setIsDeleted, type: "res_events"}}/>}
                         </Col>
                     </Row>
                 </Tab>
@@ -212,10 +212,10 @@ function CustomerReservations(props) {
 
   function Annuler(id, setIsDeleted, type) {
     let uri = ""
-    if(type === "privative") uri = "ReservationPrivateSpace/delete/"
-    else if (type === "equipment") uri = "ReservationEquipment/delete/"
-    else if (type === "meal") uri = "ReservationMeal/delete/"
-    else if (type === "events") uri = "ReservationEvents/delete/"
+    if(type === "res_privative") uri = "ReservationPrivateSpace/delete/"
+    else if (type === "res_equipment") uri = "ReservationEquipment/delete/"
+    else if (type === "res_meal") uri = "ReservationMeal/delete/"
+    else if (type === "res_events") uri = "ReservationEvents/delete/"
   
     axios.get("https://cowork-paris.000webhostapp.com/index.php/"+uri+id).then(res => setIsDeleted(true)).catch(err => setIsDeleted(false))
   }
@@ -234,12 +234,22 @@ function DetailsReservation(props) {
 
     useEffect(() => {
         let uri, field;
-        props.data.type === "privative" ? uri = "PrivativeSpace" : uri = props.data.type
-
-        if(props.data.type === "privative") field = "id_espace_privatif"
-        else if (props.data.type === "equipment") field = "id_equipment"
-        else if (props.data.type === "meal") field = "id_meal"
-        else if (props.data.type === "events") field = "id_events"
+        if(props.data.type === "res_privative" ) {
+          uri = "PrivativeSpace"
+          field = "id_espace_privatif"
+        }
+        else if(props.data.type === "res_equipment" ) {
+          uri = "equipment"
+          field = "id_equipment"
+        }
+        else if(props.data.type === "res_meal" ) {
+          uri = "meal"
+          field = "id_meal"
+        }
+        else if(props.data.type === "res_events" ) {
+          uri = "events"
+          field = "id_events"
+        }
 
         axios.get('https://cowork-paris.000webhostapp.com/index.php/'+uri +'/'+props.data.data[field]).then(res => {
             setDetails(res.data)

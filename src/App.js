@@ -108,13 +108,13 @@ function SideBar(props) {
 function App() {
   const[extanded, setExtanded] = useState(true)
   const[load, setLoad] = useState(true)
-  const[connected, setConnected] = useState(false)
+  const[connected, setConnected] = useState(null)
   const[successModification, setSuccessModification] = useState(null)
   
   const handleSuccessModification = (v) => {
     setSuccessModification(v)
   }
-
+  
   useEffect(() => {
     document.title = "Co'work Admin"
     document.body.style.backgroundColor = null
@@ -129,7 +129,7 @@ function App() {
               {getCookie("id") && <>
                 <SideBar data={{setExtanded, extanded, setLoad}}/>
                 <Main extanded={extanded}>
-                    <Header data={{history, location, setConnected}}/>
+                    <Header data={{setConnected}}/>
                     <Container fluid className="pr-20 pl-20" style={{paddingTop: "2em", paddingBottom: "2em"}}>
                       <Route path="/" exact component={props => <TableData data={{load}}/>} />
                       <Route path="/utilisateurs" component={props => <TableData data={{load}}/>} />

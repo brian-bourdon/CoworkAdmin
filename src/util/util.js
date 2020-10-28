@@ -101,7 +101,8 @@ export const deleteCookie = ( name, path ) => {
   </>)
 
 export function RealName(table, key) {
-  let realName
+  console.log(table)
+  let realName = null
   if(table === "user") {
       if(key === "firstname") realName = "Prénom"
       else if(key === "lastname") realName = "Nom"
@@ -110,24 +111,50 @@ export function RealName(table, key) {
       else if(key === "admin") realName = "Administrateur"
       else if(key === "nom") realName = "Type d'abonnement"
   }
-  else if(table === "privative") {
+  else if(table === "res_privative") {
       if(key === "horaire_debut") realName = "Horaire de début"
       else if(key === "horaire_fin") realName = "Horaire de fin"
       else if(key === "id_espace_privatif") realName = "Nom de l'espace privatif"
+      else if(key === "nom") realName = "Nom"
   }
-  else if(table === "equipment") {
+  else if(table === "res_equipment") {
       if(key === "horaire_debut") realName = "Horaire de début"
       else if(key === "horaire_fin") realName = "Horaire de fin"
       else if(key === "id_equipment") realName = "Equipment"
   }
-  else if(table === "meal") {
+  else if(table === "res_meal") {
       if(key === "horaire") realName = "Horaire"
       else if(key === "id_meal") realName = "Plateau repas"
   }
-  else if(table === "events") {
+  else if(table === "res_events") {
       if(key === "id_events") realName = "Evenement"
   }
-    return realName
+  else if(table === "space") {
+    if(key === "nom") realName = "Nom"
+  }
+  else if(table === "PrivativeSpace") {
+    if(key === "nom") realName = "Nom"
+    else if(key === "id_space") realName = "Espace"
+  }
+  else if(table === "equipment") {
+    if(key === "nom") realName = "Nom"
+    else if(key === "id_space") realName = "Espace"
+  }
+  else if(table === "meal") {
+    if(key === "nom") realName = "Nom"
+    else if(key === "id_space") realName = "Espace"
+  }
+  else if(table === "events") {
+    if(key === "nom") realName = "Nom"
+    else if(key === "description") realName = "Description"
+    else if(key === "horaire_debut") realName = "Horaire de début"
+    else if(key === "horaire_fin") realName = "Horaire de fin"
+    else if(key === "nb_places") realName = "Nombre de places"
+    else if(key === "id_space") realName = "Espace"
+  }
+
+  if(realName) return realName
+  else return key
 }
 
 export function endAbonnementToString(id_abonnement, created_at) {

@@ -19,7 +19,7 @@ export function Header(props) {
         </Nav>
         <DropdownButton variant="light" id="dropdown-item-button" title={upperCaseFirst(getCookie("firstname").toLowerCase())} className="person-circle" alignRight>
             <Dropdown.Item as="button" onClick={() => history.push("/profil")}>Profil</Dropdown.Item>
-            <Dropdown.Item as="button" onClick={() => Deconnection(props.data.setConnected)}>Déconection</Dropdown.Item>
+            <Dropdown.Item as="button" onClick={() => Deconnection(props.data.setConnected, history)}>Déconection</Dropdown.Item>
           </DropdownButton>
       </Navbar>
       </Container>

@@ -2,9 +2,16 @@ import React, { useState, useEffect } from 'react';
 import {Table, Form, FormControl, Button, Spinner, Row, Col, Alert} from 'react-bootstrap'
 import axios from 'axios'
 import {useLocation, useHistory} from "react-router-dom";
-import {upperCaseFirst, setCookie} from '../util/util';
+import {upperCaseFirst, setCookie, RealName} from '../util/util';
 import {faCheck} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import setHours from 'date-fns/setHours'
+import setMinutes from 'date-fns/setMinutes'
+import getHours from 'date-fns/setMinutes'
+import moment from 'moment';
+import {fr} from "date-fns/locale";
 
 export function TableData(props) {
     const[data, setData] = useState([])
@@ -17,6 +24,8 @@ export function TableData(props) {
     const[formAdd, setFormAdd] = useState({})
     const[successAdd, setSuccessAdd] = useState(null)
     const[path, setPath] = useState(useLocation().pathname)
+    const[space, setSpace] = useState(null)
+    const[isLoadingSpace, setIsloadingSpace] = useState(true)
 
     const handleFormAdd = (key, e) => {
         let tmp = {...formAdd}
@@ -39,6 +48,7 @@ export function TableData(props) {
         if(uri !== "user") setFilterData(data.filter(l => l.nom.toLowerCase().match(regex)))
         else setFilterData(data.filter(l => l.firstname.toLowerCase().match(regex)))
     }
+    
     useEffect(() => {
         let uriTmp = ""
         let schema = []
@@ -75,6 +85,16 @@ export function TableData(props) {
             setIsloading(false)
         })
         .catch(err => console.log(err))
+
+        if(isLoadingSpace) {
+            axios.get('https://cowork-paris.000webhostapp.com/index.php/space').then(res => {
+                setSpace(res.data)
+                setIsloadingSpace(false)
+            }).catch(err => {
+                console.log(err)
+                setIsloadingSpace(false)
+            })
+        }
      }, [uri, successModification, successAdd]);
     return (
         <>
@@ -83,9 +103,15 @@ export function TableData(props) {
             <Button variant="info" onClick={() => setAdd(!add)}>Ajouter</Button>
             {add && <Form className="mt-3 mb-3">
                 <Form.Row>
-                    {schema.map(l => <Col>
-                    <Form.Control placeholder={l} onKeyUp={(e) => handleFormAdd(l, e)} />
-                    </Col>)}
+                    {schema.map(l => {
+                        let tmp
+                        if(l.includes("horaire")) tmp =  <Form.Control placeholder={l} type="datetime-local" step="3600" value={moment(new Date()).format("YYYY-MM-DDTHH:00")} onKeyUp={(e) => handleFormAdd(l, e)} />
+                        else tmp = <Form.Control placeholder={l} onKeyUp={(e) => handleFormAdd(l, e)} />
+                        return <Col>
+                            {tmp}
+                        </Col>
+                        }
+                    )}
                     <Col>
                     <Button variant="success" onClick={() => addItem(formAdd, uri, handleSuccessAdd)} disabled={Object.values(formAdd).map(v => {let i = 0; if(v.trim() === "") i++; return i}).includes(1) || Object.keys(schema).length !== Object.keys(formAdd).length}><FontAwesomeIcon icon={faCheck}/></Button>
                     </Col>
@@ -102,13 +128,13 @@ export function TableData(props) {
                 </Alert></div>}
             </Col>
         </Row>
-        {(!isLoading) && filterData.length > 0 &&
+        {(!isLoading && !isLoadingSpace) && filterData.length > 0 &&
         <Row>
             <Col>
                 <Table striped bordered hover>
                     <thead>
                         <tr>
-                            {Object.keys(filterData[0]).filter(k => k !== "id").map((v,i) => (<th key={i}>{upperCaseFirst(v)}</th>))}
+                            {Object.keys(filterData[0]).filter(k => k !== "id").map((v,i) => (<th key={i}>{RealName(uri, v)}</th>))}
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -117,7 +143,7 @@ export function TableData(props) {
                             let tmp = {...l}
                             delete tmp.id
                             return (
-                            <TableLine key={l.id} data={{line: tmp, handleSuccessModification, uri, id: l.id}}/>
+                            <TableLine key={l.id} data={{line: tmp, handleSuccessModification, uri, id: l.id, space}}/>
                             )}
                         )}
                     </tbody>
@@ -125,7 +151,7 @@ export function TableData(props) {
             </Col>
         </Row>
         }
-        {isLoading && <div className="text-center"><Spinner as="span" animation="border" size="sm" variant="primary" role="status" aria-hidden="true" style={{width: "5em", height: "5em"}}/></div>}
+        {(isLoading || isLoadingSpace) && <div className="text-center"><Spinner as="span" animation="border" size="sm" variant="primary" role="status" aria-hidden="true" style={{width: "5em", height: "5em"}}/></div>}
         </>
     )
 }
@@ -171,7 +197,13 @@ function TableLine(props) {
     
     return (
         <tr>
-            {Object.keys(props.data.line).map((k,i) => <td key={i}>{ <Form.Control defaultValue={props.data.line[k]} disabled={disabledModif} onKeyUp={(v) => handleForm(k, v)}/>}</td>)}
+            {Object.keys(props.data.line).map((k,i) => {
+                let tmp
+                if(k === "id_space"&& disabledModif) tmp = <Form.Control defaultValue={props.data.space.filter(e => e.id === props.data.line[k])[0].nom} disabled={disabledModif} onKeyUp={(v) => handleForm(k, v)}/>
+                else if(k === "id_space" && !disabledModif) tmp = (<Form.Control as="select" defaultValue={props.data.line[k]} onChange={(v) => handleForm(k, v)}>{props.data.space.map(v => <option value={v.id}>{v.nom}</option>)}</Form.Control>)
+                else tmp = <Form.Control defaultValue={props.data.line[k]} disabled={disabledModif} onKeyUp={(v) => handleForm(k, v)}/>
+                return <td key={i}>{tmp}</td>
+            })}
             <th>
                 <div className="text-center">
                     <Button variant="warning" className="mr-2" onClick={() => handleDisabledModif()}>{disabledModif ? "Modifier" : "Annuler"}</Button>

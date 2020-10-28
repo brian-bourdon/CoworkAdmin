@@ -3,6 +3,7 @@ import {Table, Form, FormControl, Button, Spinner, Row, Col, Container, Alert} f
 import axios from 'axios'
 import {useLocation} from "react-router-dom";
 import {Connection} from './Connection'
+import md5 from 'crypto-js/md5';
 
 export function Login(props) {
     const [email, setEmail] = useState("")
@@ -19,6 +20,7 @@ export function Login(props) {
     }
 
     useEffect(() => {
+        console.log(success)
      }, []);
 
     return (
@@ -42,7 +44,7 @@ export function Login(props) {
                     {"L'authentification a échoué"}
                     </Alert></div>}
                     <div className="text-center pt-4">
-                        <Button className="mb-3" variant="primary" onClick={() => {Connection(email, pwd, setIsLoading, setSuccess, props.data.history, props.data.setConnected)}} disabled={email.trim() === "" || pwd.trim() === ""}>
+                        <Button className="mb-3" variant="primary" onClick={() => {Connection(email, md5(pwd).toString(), setIsLoading, setSuccess, props.data.history, props.data.setConnected, success)}} disabled={email.trim() === "" || pwd.trim() === ""}>
                             {isLoading && <Spinner
                                 as="span"
                                 animation="border"
