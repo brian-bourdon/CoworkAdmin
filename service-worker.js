@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/CoworkAdmin/precache-manifest.e0fd40ab042805d8572db0ce40cf86ba.js"
+  "/CoworkAdmin/precache-manifest.204a30bb0f044ba31ac0d8950deb581c.js"
 );
 
 self.addEventListener('message', (event) => {

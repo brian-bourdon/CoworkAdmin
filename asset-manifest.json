@@ -1,25 +1,25 @@
 {
   "files": {
     "main.css": "/CoworkAdmin/static/css/main.bd02df63.chunk.css",
-    "main.js": "/CoworkAdmin/static/js/main.c08e0f70.chunk.js",
-    "main.js.map": "/CoworkAdmin/static/js/main.c08e0f70.chunk.js.map",
+    "main.js": "/CoworkAdmin/static/js/main.984a33c0.chunk.js",
+    "main.js.map": "/CoworkAdmin/static/js/main.984a33c0.chunk.js.map",
     "runtime-main.js": "/CoworkAdmin/static/js/runtime-main.9e9de6c0.js",
     "runtime-main.js.map": "/CoworkAdmin/static/js/runtime-main.9e9de6c0.js.map",
     "static/css/2.8db874d2.chunk.css": "/CoworkAdmin/static/css/2.8db874d2.chunk.css",
-    "static/js/2.2c459b9a.chunk.js": "/CoworkAdmin/static/js/2.2c459b9a.chunk.js",
-    "static/js/2.2c459b9a.chunk.js.map": "/CoworkAdmin/static/js/2.2c459b9a.chunk.js.map",
+    "static/js/2.9b94d531.chunk.js": "/CoworkAdmin/static/js/2.9b94d531.chunk.js",
+    "static/js/2.9b94d531.chunk.js.map": "/CoworkAdmin/static/js/2.9b94d531.chunk.js.map",
     "index.html": "/CoworkAdmin/index.html",
-    "precache-manifest.e0fd40ab042805d8572db0ce40cf86ba.js": "/CoworkAdmin/precache-manifest.e0fd40ab042805d8572db0ce40cf86ba.js",
+    "precache-manifest.204a30bb0f044ba31ac0d8950deb581c.js": "/CoworkAdmin/precache-manifest.204a30bb0f044ba31ac0d8950deb581c.js",
     "service-worker.js": "/CoworkAdmin/service-worker.js",
     "static/css/2.8db874d2.chunk.css.map": "/CoworkAdmin/static/css/2.8db874d2.chunk.css.map",
     "static/css/main.bd02df63.chunk.css.map": "/CoworkAdmin/static/css/main.bd02df63.chunk.css.map",
-    "static/js/2.2c459b9a.chunk.js.LICENSE.txt": "/CoworkAdmin/static/js/2.2c459b9a.chunk.js.LICENSE.txt"
+    "static/js/2.9b94d531.chunk.js.LICENSE.txt": "/CoworkAdmin/static/js/2.9b94d531.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.9e9de6c0.js",
     "static/css/2.8db874d2.chunk.css",
-    "static/js/2.2c459b9a.chunk.js",
+    "static/js/2.9b94d531.chunk.js",
     "static/css/main.bd02df63.chunk.css",
-    "static/js/main.c08e0f70.chunk.js"
+    "static/js/main.984a33c0.chunk.js"
   ]
 }
