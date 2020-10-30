@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "843c5d3a8164c76452d252d6ed5f45b6",
+    "revision": "24602c58e3fa02bd7423775a91f77dfc",
     "url": "/coworkadmin/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/coworkadmin/static/css/2.8db874d2.chunk.css"
   },
   {
-    "revision": "dc5e250dea789cd9de0e",
+    "revision": "8c88fcbfddbb493c64df",
     "url": "/coworkadmin/static/css/main.bd02df63.chunk.css"
   },
   {
@@ -20,8 +20,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/coworkadmin/static/js/2.48228f57.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "dc5e250dea789cd9de0e",
-    "url": "/coworkadmin/static/js/main.9f74f3f4.chunk.js"
+    "revision": "8c88fcbfddbb493c64df",
+    "url": "/coworkadmin/static/js/main.01fabc24.chunk.js"
   },
   {
     "revision": "a7f8a16977aa4810c641",
