@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/coworkadmin/static/css/main.bd02df63.chunk.css",
-    "main.js": "/coworkadmin/static/js/main.3deeebbb.chunk.js",
-    "main.js.map": "/coworkadmin/static/js/main.3deeebbb.chunk.js.map",
+    "main.js": "/coworkadmin/static/js/main.767f15fc.chunk.js",
+    "main.js.map": "/coworkadmin/static/js/main.767f15fc.chunk.js.map",
     "runtime-main.js": "/coworkadmin/static/js/runtime-main.c914e834.js",
     "runtime-main.js.map": "/coworkadmin/static/js/runtime-main.c914e834.js.map",
     "static/css/2.8db874d2.chunk.css": "/coworkadmin/static/css/2.8db874d2.chunk.css",
     "static/js/2.98b583aa.chunk.js": "/coworkadmin/static/js/2.98b583aa.chunk.js",
     "static/js/2.98b583aa.chunk.js.map": "/coworkadmin/static/js/2.98b583aa.chunk.js.map",
     "index.html": "/coworkadmin/index.html",
-    "precache-manifest.9de287c0c0f4e54e4165fce342275c04.js": "/coworkadmin/precache-manifest.9de287c0c0f4e54e4165fce342275c04.js",
+    "precache-manifest.9e377f1d17cc848a418f88f2034c49e6.js": "/coworkadmin/precache-manifest.9e377f1d17cc848a418f88f2034c49e6.js",
     "service-worker.js": "/coworkadmin/service-worker.js",
     "static/css/2.8db874d2.chunk.css.map": "/coworkadmin/static/css/2.8db874d2.chunk.css.map",
     "static/css/main.bd02df63.chunk.css.map": "/coworkadmin/static/css/main.bd02df63.chunk.css.map",
@@ -20,6 +20,6 @@
     "static/css/2.8db874d2.chunk.css",
     "static/js/2.98b583aa.chunk.js",
     "static/css/main.bd02df63.chunk.css",
-    "static/js/main.3deeebbb.chunk.js"
+    "static/js/main.767f15fc.chunk.js"
   ]
 }
