@@ -12,6 +12,7 @@ import setMinutes from 'date-fns/setMinutes'
 import getHours from 'date-fns/setMinutes'
 import moment from 'moment';
 import {fr} from "date-fns/locale";
+import md5 from 'crypto-js/md5';
 
 export function TableData(props) {
     const[data, setData] = useState([])
@@ -26,10 +27,16 @@ export function TableData(props) {
     const[path, setPath] = useState(useLocation().pathname)
     const[space, setSpace] = useState(null)
     const[isLoadingSpace, setIsloadingSpace] = useState(true)
+    const[users, setUsers] = useState(null)
+    const[isLoadingUsers, setIsloadingUsers] = useState(true)
 
     const handleFormAdd = (key, e) => {
+        let val
+        if(e.target === undefined) val = e
+        else val = e.target.value
         let tmp = {...formAdd}
-        tmp[key] = e.target.value
+        if(key === "pwd") val = md5(val).toString()
+        tmp[key] = val
         setFormAdd(tmp)
     }
 
@@ -41,12 +48,28 @@ export function TableData(props) {
         setSuccessAdd(v)
     }
 
-    const handleSearch = (e) => {
+    const handleSearch = (k, e) => {
+        
         let regex = new RegExp( e.target.value.toLowerCase(), 'g');
+        let filter
+        let field
         console.log(data)
-        console.log(data.filter(l => l.firstname.toLowerCase().match(regex)))
-        if(uri !== "user") setFilterData(data.filter(l => l.nom.toLowerCase().match(regex)))
-        else setFilterData(data.filter(l => l.firstname.toLowerCase().match(regex)))
+        const tabSelect = ["ReservationPrivateSpace", "ReservationEquipment", "ReservationEvents", "Ticket", "ReservationMeal"]
+        if(e.target.value !== "") {
+            if(tabSelect.includes(uri)) {
+                field = "id_user"
+                filter = data.filter(l => l[k] === e.target.value)
+            }
+            else if(uri === "user") {
+                field = "lastname"
+                filter = data.filter(l => l[k].toLowerCase().match(regex))
+            }
+            else {
+                field = "nom"
+                filter = data.filter(l => l[k].toLowerCase().match(regex))
+            }
+            setFilterData(filter)
+        } else setFilterData(data)
     }
     
     useEffect(() => {
@@ -76,6 +99,26 @@ export function TableData(props) {
             uriTmp = "user"
             schema = ["firstname", "lastname", "date_naissance", "email", "pwd", "admin"]
         }
+        else if(path === "/reservations/espaces_privatifs") {
+            uriTmp = "ReservationPrivateSpace"
+            schema = ["horaire_debut", "horaire_fin", "id_espace_privatif", "id_user"]
+        }
+        else if(path === "/reservations/equipements") {
+            uriTmp = "ReservationEquipment"
+            schema = ["horaire_debut", "horaire_fin", "id_equipment", "id_user", "rendu"]
+        }
+        else if(path === "/reservations/plateaux_repas") {
+            uriTmp = "ReservationMeal"
+            schema = ["horaire", "id_meal", "id_user"]
+        }
+        else if(path === "/reservations/evenements") {
+            uriTmp = "ReservationEvents"
+            schema = ["id_user", "id_events"]
+        }
+        else if(path === "/ticket") {
+            uriTmp = "Ticket"
+            schema = ["objet", "text", "traitement", "id_user"]
+        }
         setUri(uriTmp)
         setSchema(schema)
 
@@ -86,16 +129,30 @@ export function TableData(props) {
         })
         .catch(err => console.log(err))
 
-        if(isLoadingSpace) {
-            axios.get('https://cowork-paris.000webhostapp.com/index.php/space').then(res => {
-                setSpace(res.data)
+        if(schema.includes("id_space") && isLoadingSpace) {
+            axios.get('https://cowork-paris.000webhostapp.com/index.php/space').then(res2 => {
+                setSpace(res2.data)
                 setIsloadingSpace(false)
+                handleFormAdd("id_space", res2.data[0].id)
             }).catch(err => {
                 console.log(err)
                 setIsloadingSpace(false)
             })
         }
+        if(schema.includes("id_user") && isLoadingUsers) {
+            axios.get('https://cowork-paris.000webhostapp.com/index.php/user').then(res => {
+                setUsers(res.data.filter(u => u.admin !== "true"))
+                setIsloadingUsers(false)
+                handleFormAdd("id_user", res.data[0].id)
+            }).catch(err => {
+                console.log(err)
+                setIsloadingUsers(false)
+            })
+        if(schema.includes("rendu")) handleFormAdd("rendu", "oui")
+        }
+
      }, [uri, successModification, successAdd]);
+     console.log(formAdd)
     return (
         <>
         <Row>
@@ -103,10 +160,10 @@ export function TableData(props) {
             <Button variant="info" onClick={() => setAdd(!add)}>Ajouter</Button>
             {add && <Form className="mt-3 mb-3">
                 <Form.Row>
-                    {schema.map(l => {
+                    {schema.map((l,i) => {
                         let tmp
-                        if(l.includes("horaire")) tmp =  <Form.Control placeholder={l} type="datetime-local" step="3600" value={moment(new Date()).format("YYYY-MM-DDTHH:00")} onKeyUp={(e) => handleFormAdd(l, e)} />
-                        else tmp = <Form.Control placeholder={l} onKeyUp={(e) => handleFormAdd(l, e)} />
+                        if(l.includes("horaire")) tmp =  <Form.Control key={i} placeholder={RealName(uri, l)} type="datetime-local" step="3600" onChange={(e) => handleFormAdd(l, e)} />
+                        else tmp = ((schema.includes("id_user") && !isLoadingUsers) || (schema.includes("id_space") && !isLoadingSpace) || (!schema.includes("id_user") && !schema.includes("id_space"))) ? <Select data={{k: l, v: "", disabledModif: false, handleForm: handleFormAdd, space, i, users, uri}}/> : <div className="text-center"><Spinner as="span" animation="border" size="sm" variant="primary" role="status" aria-hidden="true" style={{width: "5em", height: "5em"}}/></div>
                         return <Col>
                             {tmp}
                         </Col>
@@ -122,28 +179,36 @@ export function TableData(props) {
                 {successAdd ? "L'élement a bien été ajouté" : "L'ajout a échoué"}
                 </Alert></div>}
                 <hr/>
-                <FormControl type="text" placeholder="Filtrer par nom" className="mr-auto mt-3 mb-3" onKeyUp={(e) => handleSearch(e)}/>
+                {!["ReservationPrivateSpace", "ReservationEquipment", "ReservationEvents", "ReservationMeal", "Ticket"].includes(uri) ? <FormControl type="text" placeholder="Filtrer par nom" className="mr-auto mt-3 mb-3" onKeyUp={(e) => handleSearch("nom",e)}/> : (!isLoadingUsers) ? <Form.Group><Form.Label>Utilisateur:</Form.Label><Select data={{k: "id_user", v: "", disabledModif: false, handleForm: handleSearch, space, i: 255, users, uri, tous: true}}/></Form.Group> : <div className="text-center"><Spinner as="span" animation="border" size="sm" variant="primary" role="status" aria-hidden="true"/></div>}
+                {uri === "ReservationEquipment" && <Form.Group><Form.Label>Equipement rendu:</Form.Label><Form.Control as="select" onChange={(e) => handleSearch("rendu", e)}>
+                    <option value="">Tous</option>
+                    <option value="oui">Oui</option>
+                    <option value="non">Non</option>
+                </Form.Control></Form.Group>}
                 {successModification !== null && <div className="text-center"><Alert className="mb-0" variant={successModification ? "success" : "danger"}>
                 {successModification ? "Modification effectuée(s)" : "La modification a échoué"}
                 </Alert></div>}
             </Col>
         </Row>
-        {(!isLoading && !isLoadingSpace) && filterData.length > 0 &&
+        {(!isLoading) && filterData.length > 0 &&
         <Row>
             <Col>
                 <Table striped bordered hover>
                     <thead>
                         <tr>
-                            {Object.keys(filterData[0]).filter(k => k !== "id").map((v,i) => (<th key={i}>{RealName(uri, v)}</th>))}
+                            {Object.keys(filterData[0]).filter(k => k !== "id" && k !== "pwd").map((v,i) => (<th key={i}>{RealName(uri, v)}</th>))}
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {filterData.map(l => {
+                        {filterData.map((l,i) => {
                             let tmp = {...l}
                             delete tmp.id
+                            delete tmp.pwd
                             return (
-                            <TableLine key={l.id} data={{line: tmp, handleSuccessModification, uri, id: l.id, space}}/>
+                            <>
+                                {(schema.includes("id_space") && space) || (schema.includes("id_user") && users) || (!schema.includes("id_space") && !schema.includes("id_user")) ? <TableLine key={i} data={{line: tmp, handleSuccessModification, uri, id: l.id, space, users, uri}}/> : i === 1 && <Spinner as="span" animation="border" size="sm" variant="primary" role="status" aria-hidden="true" style={{width: "5em", height: "5em"}}/>}
+                            </>
                             )}
                         )}
                     </tbody>
@@ -151,7 +216,7 @@ export function TableData(props) {
             </Col>
         </Row>
         }
-        {(isLoading || isLoadingSpace) && <div className="text-center"><Spinner as="span" animation="border" size="sm" variant="primary" role="status" aria-hidden="true" style={{width: "5em", height: "5em"}}/></div>}
+        {(isLoading) && <div className="text-center"><Spinner as="span" animation="border" size="sm" variant="primary" role="status" aria-hidden="true" style={{width: "5em", height: "5em"}}/></div>}
         </>
     )
 }
@@ -169,7 +234,7 @@ function addItem(data, uri, handleSuccessAdd) {
         })
         .then(res=>res.json())
         .then(res => {
-            if(res[0] === "Created successfully.") {
+            if(res[0] === "Reservation created successfully." || res[0] === "User created successfully." || res[0] === "Created successfully.") {
                  handleSuccessAdd(Date.now())
             } else {
                 handleSuccessAdd(false)
@@ -183,7 +248,7 @@ function addItem(data, uri, handleSuccessAdd) {
 function TableLine(props) {
     const[disabledModif, setDisabledModif] = useState(true)
     const[form, setForm] = useState(props.data.line)
-    let history = useHistory()
+    let history = useHistory();
 
     const handleDisabledModif = () => {
         setDisabledModif(!disabledModif)
@@ -198,11 +263,7 @@ function TableLine(props) {
     return (
         <tr>
             {Object.keys(props.data.line).map((k,i) => {
-                let tmp
-                if(k === "id_space"&& disabledModif) tmp = <Form.Control defaultValue={props.data.space.filter(e => e.id === props.data.line[k])[0].nom} disabled={disabledModif} onKeyUp={(v) => handleForm(k, v)}/>
-                else if(k === "id_space" && !disabledModif) tmp = (<Form.Control as="select" defaultValue={props.data.line[k]} onChange={(v) => handleForm(k, v)}>{props.data.space.map(v => <option value={v.id}>{v.nom}</option>)}</Form.Control>)
-                else tmp = <Form.Control defaultValue={props.data.line[k]} disabled={disabledModif} onKeyUp={(v) => handleForm(k, v)}/>
-                return <td key={i}>{tmp}</td>
+                return <td key={i}>{<Select key={i} data={{k, v: props.data.line[k], disabledModif, handleForm, space: props.data.space, i, users: props.data.users, uri: props.data.uri}}/>}</td>
             })}
             <th>
                 <div className="text-center">
@@ -214,6 +275,99 @@ function TableLine(props) {
             </th>
         </tr>
     )
+}
+
+function Select(props) {
+    const[privativeSpace, setPrivativeSpace] = useState(null)
+    const[isLoadingPrivativeSpace, setIsloadingPrivativeSpace] = useState(true)
+    const[equipment, setEquipment] = useState(null)
+    const[isLoadingEquipment, setIsloadingEquipment] = useState(true)
+    const[rendu, setRendu] = useState(["oui", "non"])
+    const[traitement, setTraitement] = useState(["en_cours", "archivé"])
+    const[admin, setAdmin] = useState(["true", "false"])
+    const[meal, setMeal] = useState(null)
+    const[isLoadingMeal, setIsloadingMeal] = useState(true)
+    const[events, setEvents] = useState(null)
+    const[isLoadingEvents, setIsloadingEvents] = useState(true)
+    let location  = useLocation()
+    console.log(props.data.k)
+    console.log(props.data.uri)
+    useEffect(() => {
+        console.log(props.data.k)
+        let url
+        if(props.data.k === "id_espace_privatif" && isLoadingPrivativeSpace) {
+            if(props.data.v === "") url = "https://cowork-paris.000webhostapp.com/index.php/PrivativeSpace/"
+            else url = "https://cowork-paris.000webhostapp.com/index.php/ReservationPrivateSpace/privateSpace/"
+            axios.get(url + props.data.v).then(res => {
+                setPrivativeSpace(res.data)
+                setIsloadingPrivativeSpace(false)
+                if(props.data.v === "") props.data.handleForm(props.data.k, res.data[0].id)
+            }).catch(err => {
+                console.log(err)
+                setIsloadingPrivativeSpace(false)
+            })
+        }
+        else if(props.data.k === "id_equipment" && isLoadingEquipment) {
+            if(props.data.v === "") url = "https://cowork-paris.000webhostapp.com/index.php/Equipment/"
+            else url = "https://cowork-paris.000webhostapp.com/index.php/ReservationEquipment/equipment/"
+            axios.get(url + props.data.v).then(res => {
+                setEquipment(res.data)
+                setIsloadingEquipment(false)
+                if(props.data.v === "") props.data.handleForm(props.data.k, res.data[0].id)
+            }).catch(err => {
+                console.log(err)
+                setIsloadingEquipment(false)
+            })
+        }
+        else if(props.data.k === "id_meal" && isLoadingMeal) {
+            if(props.data.v === "") url = "https://cowork-paris.000webhostapp.com/index.php/Meal/"
+            else url = "https://cowork-paris.000webhostapp.com/index.php/ReservationMeal/meal/"
+            axios.get(url + props.data.v).then(res => {
+                setMeal(res.data)
+                setIsloadingMeal(false)
+                if(props.data.v === "") props.data.handleForm(props.data.k, res.data[0].id)
+            }).catch(err => {
+                console.log(err)
+                setIsloadingMeal(false)
+            })
+        }
+        else if(props.data.k === "id_events" && isLoadingEvents) {
+            if(props.data.v === "") url = "https://cowork-paris.000webhostapp.com/index.php/Events/"
+            else url = "https://cowork-paris.000webhostapp.com/index.php/ReservationEvents/events/"
+            axios.get(url + props.data.v).then(res => {
+                setEvents(res.data)
+                setIsloadingEvents(false)
+                if(props.data.v === "") props.data.handleForm(props.data.k, res.data[0].id)
+            }).catch(err => {
+                console.log(err)
+                setIsloadingEvents(false)
+            })
+        }
+    }, [props.data.k === "id_espace_privatif", props.data.k === "id_equipment", props.data.k === "id_meal"])
+    if(location.pathname === "/reservations/equipements" && props.data.k !== "rendu" && props.data.v !== "") props.data.disabledModif = true
+    if(location.pathname === "/ticket" && props.data.k !== "traitement" && props.data.v !== "") props.data.disabledModif = true
+    let allOps = <option key={1000} value="">Tous</option>
+    console.log(props.data)
+    return (
+        <>
+            {props.data.k !== "id_space"  && props.data.k !== "id_espace_privatif" && props.data.k !== "id_user" && props.data.k !== "id_equipment" && props.data.k !== "rendu" && props.data.k !== "id_meal" && props.data.k !== "id_events" && props.data.k !== "traitement" && props.data.k !== "admin" && <Form.Control as={props.data.uri === "Ticket" && props.data.k === "text" ? "textarea" : "input"} placeholder={RealName(props.data.uri, props.data.k)} key={props.data.i+100} defaultValue={props.data.v} disabled={props.data.disabledModif} onKeyUp={(l) => props.data.handleForm(props.data.k, l)}/>}
+            {props.data.k === "id_space" && <Form.Control as="select" key={props.data.i+100} defaultValue={props.data.v} disabled={props.data.disabledModif} onChange={(l) => props.data.handleForm(props.data.k, l)} >{props.data.space.map((v,i) => <option key={i} value={v.id}>{v.nom}</option>)}</Form.Control>}
+            {props.data.k === "id_espace_privatif" && !isLoadingPrivativeSpace && <Form.Control as="select" key={props.data.i+100} defaultValue={props.data.v} disabled={props.data.disabledModif} onChange={(l) => props.data.handleForm(props.data.k, l)} >{privativeSpace.map((v,i) => <option key={i} value={v.id}>{v.nom}</option>)}</Form.Control>}
+            {props.data.k === "id_espace_privatif" && isLoadingPrivativeSpace && <div className="text-center"><Spinner as="span" animation="border" size="sm" variant="primary" role="status" aria-hidden="true"/></div>}
+            {props.data.k === "id_user" && <Form.Control as="select" key={props.data.i+100} defaultValue={props.data.tous ? "" : props.data.v} disabled={props.data.disabledModif} onChange={(l) => props.data.handleForm(props.data.k, l)} >{ true ? [allOps, ...props.data.users.map((v,i) => <option key={i} value={v.id}>{v.firstname + " " + v.lastname}</option>)] : props.data.users.map((v,i) => <option key={i} value={v.id}>{v.firstname + " " + v.lastname}</option>)}</Form.Control>}
+            {props.data.k === "id_equipment" && !isLoadingEquipment && <Form.Control as="select" key={props.data.i+110} defaultValue={props.data.v} disabled={props.data.disabledModif} onChange={(l) => props.data.handleForm(props.data.k, l)} >{equipment.map((v,i) => <option key={i} value={v.id}>{v.nom}</option>)}</Form.Control>}
+            {props.data.k === "id_equipment" && isLoadingEquipment && <div className="text-center"><Spinner as="span" animation="border" size="sm" variant="primary" role="status" aria-hidden="true"/></div>}
+            {props.data.k === "rendu" && <Form.Control as="select" key={props.data.i+120} defaultValue={props.data.v} disabled={props.data.disabledModif} onChange={(l) => props.data.handleForm(props.data.k, l)} >{rendu.map((v,i) => <option key={i} value={v}>{v}</option>)}</Form.Control>}
+            {props.data.k === "id_meal" && !isLoadingMeal && <Form.Control as="select" key={props.data.i+110} defaultValue={props.data.v} disabled={props.data.disabledModif} onChange={(l) => props.data.handleForm(props.data.k, l)} >{meal.map((v,i) => <option key={i} value={v.id}>{v.nom}</option>)}</Form.Control>}
+            {props.data.k === "id_meal" && isLoadingMeal && <div className="text-center"><Spinner as="span" animation="border" size="sm" variant="primary" role="status" aria-hidden="true"/></div>}
+            {props.data.k === "id_events" && !isLoadingEvents && <Form.Control as="select" key={props.data.i+110} defaultValue={props.data.v} disabled={props.data.disabledModif} onChange={(l) => props.data.handleForm(props.data.k, l)} >{events.map((v,i) => <option key={i} value={v.id}>{v.nom}</option>)}</Form.Control>}
+            {props.data.k === "id_events" && isLoadingEvents && <div className="text-center"><Spinner as="span" animation="border" size="sm" variant="primary" role="status" aria-hidden="true"/></div>}
+            {props.data.k === "traitement" && <Form.Control as="select" key={props.data.i+120} defaultValue={props.data.v} disabled={props.data.disabledModif} onChange={(l) => props.data.handleForm(props.data.k, l)} >{traitement.map((v,i) => <option key={i} value={v}>{RealName(props.data.uri, v)}</option>)}</Form.Control>}
+            {props.data.k === "admin" && <Form.Control as="select" key={props.data.i+120} defaultValue={props.data.v} disabled={props.data.disabledModif} onChange={(l) => props.data.handleForm(props.data.k, l)} >{admin.map((v,i) => <option key={i} value={v}>{RealName(props.data.uri, v)}</option>)}</Form.Control>}
+        </>
+        //<Form.Control as={privativeSpace || space ? "select" : ""} defaultValue={space ? space.filter(e => e.id === props.data.v)[0].nom : privativeSpace ? privativeSpace.filter(e => e.id === props.data.v)[0].nom : props.data.v} disabled={props.data.disabledModif} onKeyUp={(l) => props.data.handleForm(props.data.k, l)}/>
+    )
+
 }
 
 function Update(data, handleSuccessModification, uri, id, handleDisabledModif) {

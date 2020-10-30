@@ -13,15 +13,16 @@ export function DetailUser(props) {
     const history = useHistory()
 
     useEffect(() => {
-        if(!location.state || !location.state.id) history.push("/utilisateurs")
-        axios.get('https://cowork-paris.000webhostapp.com/index.php/user/'+location.state.id).then(res => setUser(res.data)).catch(err => history.push("/utilisateurs"))
+        if(!location.state || !location.state.id) {
+          history.push("/utilisateurs")
+        } else axios.get('https://cowork-paris.000webhostapp.com/index.php/user/'+location.state.id).then(res => setUser(res.data)).catch(err => history.push("/utilisateurs"))
      }, [location])
 
     return (
         <>
             {user &&
             <>
-                <div className="pb-4"><h3>{upperCaseFirst(user.firstname.toLowerCase()) + " " + upperCaseFirst(user.lastname.toLowerCase())}<Button className="float-right" variant="danger" disabled={user.admin === "true"}>Supprimer</Button></h3><hr/></div>
+                <div className="pb-4"><h3>{upperCaseFirst(user.firstname.toLowerCase()) + " " + upperCaseFirst(user.lastname.toLowerCase())}{/*<Button className="float-right" variant="danger" disabled={user.admin === "true"}>Supprimer</Button>*/}</h3><hr/></div>
                 <div className="pb-2"><h5>Informations et réservations</h5></div>
                 <CustomerReservations data={{idUser: location.state.id, user}}/>
             </>
@@ -44,6 +45,7 @@ function CustomerReservations(props) {
   
     const [isLoading, setIsLoading] = useState({privative: true, equipment: true, meal: true, events: true, infos: true})
     const [isDeleted, setIsDeleted] = useState(null)
+    const [isResiliated, setIsResiliated] = useState(null)
   
     const handleSelect = (tab) => {
       switch(tab) {
@@ -66,6 +68,7 @@ function CustomerReservations(props) {
     }
   
     useEffect(() => {
+      console.log("kkkkkkkkkk")
       if(activeTab === "privative") {
         axios.get('https://cowork-paris.000webhostapp.com/index.php/user/privative/'+props.data.idUser)
         .then(res => {
@@ -100,11 +103,12 @@ function CustomerReservations(props) {
         .catch(e => setIsLoading({...isLoading, events: false}))
       }
       if(activeTab === "infos") {
+        console.log('bonjour')
         console.log(props.data.user)
         setInfos([props.data.user])
         setIsLoading({...isLoading, infos: false})
       }
-    }, [activeTab, isDeleted]);
+    }, [activeTab, isDeleted, isResiliated]);
   
     return (
     <Row>
@@ -115,6 +119,9 @@ function CustomerReservations(props) {
                         <Col lg="12" className="pt-3">
                         {activeTab === "infos" && isDeleted !== null && <Alert variant={isDeleted ? "success" : "danger"}>
                         {isDeleted ? "Réservation annulée" : "Echec de l'annulation"}
+                        {isResiliated !== null && <Alert className="mb-2" variant={isResiliated ? "success" : "danger"}>
+                        {isResiliated ? "L'abonnement a bien été résillié" : "L'abonnement n'a pas pu être résilié"}
+                        </Alert>}
                         </Alert>}
                         {isLoading.infos && <div className="text-center"><Spinner
                         as="span"
@@ -125,7 +132,7 @@ function CustomerReservations(props) {
                         aria-hidden="true"
                         style={{width: "5em", height: "5em"}}
                         /></div>}
-                        {!isLoading.infos && activeTab === "infos" && <ListInfosUser data={{data: infos, setIsDeleted, type: "user"}}/>}
+                        {!isLoading.infos && activeTab === "infos" && <ListInfosUser data={{data: infos, setIsDeleted, type: "user", setIsLoading, isLoading, setIsResiliated}}/>}
                         </Col>
                     </Row>
                 </Tab>
@@ -295,6 +302,7 @@ function DetailsReservation(props) {
   function ListInfosUser(props) {
     const[abonnement, setAbonnement] = useState(null)
     const[resAbonnement, setResAbonnement] = useState(null)
+    const [isLoadingDelete, setIsLoadingDelete] = useState(false)
       
     useEffect(() => {
         axios.get('https://cowork-paris.000webhostapp.com/index.php/user/abonnement/'+ props.data.data[0].id).then(res => {
@@ -326,7 +334,16 @@ function DetailsReservation(props) {
         </ListGroup.Item>)
     }))}
     <ListGroupItem key={17} as="li">
-        <h5>Abonnement</h5>
+      <h5>Abonnement {
+      resAbonnement && resAbonnement.id_abonnement !== "1" && <Button className="float-right" variant="danger" onClick={() => Resiliation(resAbonnement.id, setIsLoadingDelete, props.data.setIsLoading, props.data.isLoading, props.data.setIsResiliated)}>{isLoadingDelete && <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                  className="pr-2"
+                />}
+                {!isLoadingDelete && "Résilier"}</Button>}</h5>
         {abonnement !== "not_sub" && Object.keys(abonnement).filter(a => a !== "id").map((a,i) => <p key={i}>{ RealName(props.data.type, a) + ": " + abonnement[a]}</p>)}
         {abonnement !== "not_sub" && <p>{endAbonnementToString(resAbonnement.id_abonnement, resAbonnement.created_at)}</p>}
         {abonnement === "not_sub" && <p>Aucun abonnement en cours</p>}
@@ -334,4 +351,22 @@ function DetailsReservation(props) {
     </ListGroup>}
     </>
     )
+  }
+
+  function Resiliation(idResAbonnement, setIsLoadingDelete, setIsLoading, isLoading, setIsResiliated) {
+    setIsLoadingDelete(true)
+    axios.get('https://cowork-paris.000webhostapp.com/index.php/ResAbonnement/delete/'+idResAbonnement).then(res => {
+      setIsLoadingDelete(false)
+      setIsLoading({...isLoading, infos: true})
+      if(res.data[0] === "Res deleted successfully.") {
+        setIsResiliated(true)
+      }else {
+        setIsResiliated(false)
+      }
+    }
+    ).catch(err => {
+      setIsLoadingDelete(false)
+      setIsLoading({...isLoading, infos: true})
+      setIsResiliated(false)
+    })
   }

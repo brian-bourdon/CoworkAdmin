@@ -9,7 +9,7 @@ import {
   useHistory
 } from "react-router-dom";
 import './SideBar.css';
-import { faHome, faUsers, faBuilding, faKey, faLaptopHouse, faUtensils, faCalendarAlt } from '@fortawesome/free-solid-svg-icons'
+import { faHome, faUsers, faBuilding, faKey, faLaptopHouse, faUtensils, faCalendarAlt, faFolder } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {Container, Row, Col, Spinner, CardDeck, Alert, Navbar, Form, FormControl, Button} from 'react-bootstrap'
 import styled from 'styled-components';
@@ -52,6 +52,14 @@ function SideBar(props) {
     
     <SideNav.Toggle/>
       <SideNav.Nav defaultSelected={location.pathname === "/" ? "utilisateurs" : null}>
+        <NavItem eventKey="ticket" active={location.pathname === "/ticket" ? true : false} onClick={() => props.data.setLoad(true)}>
+              <NavIcon>
+                <FontAwesomeIcon icon={faUsers} style={{ fontSize: '1.75em', verticalAlign: 'middle' }}/>
+              </NavIcon>
+              <NavText style={{ paddingRight: 32 }}>
+                Gestion des tickets
+              </NavText>
+          </NavItem>
           <NavItem eventKey="utilisateurs" active={location.pathname === "/utilisateurs" ? true : false} onClick={() => props.data.setLoad(true)}>
               <NavIcon>
                 <FontAwesomeIcon icon={faUsers} style={{ fontSize: '1.75em', verticalAlign: 'middle' }}/>
@@ -100,6 +108,34 @@ function SideBar(props) {
                   Evenements
               </NavText>
           </NavItem>
+          <NavItem eventKey="reservations" active={location.pathname === "/reservations" ? true : false}>
+            <NavIcon>
+              <FontAwesomeIcon icon={faFolder} style={{ fontSize: '1.75em', verticalAlign: 'middle' }}/>
+            </NavIcon>
+            <NavText style={{ paddingRight: 32 }} title="Settings">
+                Reservations
+            </NavText>
+            <NavItem eventKey="reservations/espaces_privatifs" active={location.pathname === "/reservations/espaces_privatifs"}>
+                <NavText title="Espaces privatifs">
+                  Espaces privatifs
+                </NavText>
+            </NavItem>
+            <NavItem eventKey="reservations/equipements"  active={location.pathname === "/reservations/equipements"}>
+                <NavText title="Equipements">
+                  Equipements
+                </NavText>
+            </NavItem>
+            <NavItem eventKey="reservations/plateaux_repas" active={location.pathname === "/reservations/plateaux_repas"}>
+                <NavText title="Plateaux repas">
+                  Plateaux repas
+                </NavText>
+            </NavItem>
+            <NavItem eventKey="reservations/evenements" active={location.pathname === "/reservations/evenements"}>
+                <NavText title="Evenements">
+                  Evenements
+                </NavText>
+            </NavItem>
+        </NavItem>
       </SideNav.Nav>
     </SideNav>
   )
@@ -140,6 +176,11 @@ function App() {
                       <Route path="/evenements" component={props => <TableData data={{load}}/>} />
                       <Route path="/profil" component={props => <Profil data={{handleSuccessModification, successModification}}/>} />
                       <Route path="/details" component={props => <DetailUser data={{load}}/>} />
+                      <Route path="/reservations/espaces_privatifs" component={props => <TableData data={{load}}/>} />
+                      <Route path="/reservations/equipements" component={props => <TableData data={{load}}/>} />
+                      <Route path="/reservations/plateaux_repas" component={props => <TableData data={{load}}/>} />
+                      <Route path="/reservations/evenements" component={props => <TableData data={{load}}/>} />
+                      <Route path="/ticket" component={props => <TableData data={{load}}/>} />
                     </Container>
                 </Main>
               </>}
