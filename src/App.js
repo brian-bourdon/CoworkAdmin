@@ -158,10 +158,10 @@ function App() {
 
   return (
     <div className="App">
-      <Router basename={process.env.PUBLIC_URL}>
+      <Router basename={window.location.pathname || ''}>
         <Route render={({ location, history }) => (
             <React.Fragment>
-              {!getCookie("id") && <Route path="/" component={props => <Login data={{location, history, setConnected}}/>} />}
+              {!getCookie("id") && <Route path="/" exact component={props => <Login data={{location, history, setConnected}}/>} />}
               {getCookie("id") && <>
                 <SideBar data={{setExtanded, extanded, setLoad}}/>
                 <Main extanded={extanded}>
