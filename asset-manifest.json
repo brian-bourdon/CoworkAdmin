@@ -1,25 +1,25 @@
 {
   "files": {
-    "main.css": "/coworkadmin/static/css/main.bd02df63.chunk.css",
-    "main.js": "/coworkadmin/static/js/main.767f15fc.chunk.js",
-    "main.js.map": "/coworkadmin/static/js/main.767f15fc.chunk.js.map",
-    "runtime-main.js": "/coworkadmin/static/js/runtime-main.c914e834.js",
-    "runtime-main.js.map": "/coworkadmin/static/js/runtime-main.c914e834.js.map",
-    "static/css/2.8db874d2.chunk.css": "/coworkadmin/static/css/2.8db874d2.chunk.css",
-    "static/js/2.98b583aa.chunk.js": "/coworkadmin/static/js/2.98b583aa.chunk.js",
-    "static/js/2.98b583aa.chunk.js.map": "/coworkadmin/static/js/2.98b583aa.chunk.js.map",
-    "index.html": "/coworkadmin/index.html",
-    "precache-manifest.9e377f1d17cc848a418f88f2034c49e6.js": "/coworkadmin/precache-manifest.9e377f1d17cc848a418f88f2034c49e6.js",
-    "service-worker.js": "/coworkadmin/service-worker.js",
-    "static/css/2.8db874d2.chunk.css.map": "/coworkadmin/static/css/2.8db874d2.chunk.css.map",
-    "static/css/main.bd02df63.chunk.css.map": "/coworkadmin/static/css/main.bd02df63.chunk.css.map",
-    "static/js/2.98b583aa.chunk.js.LICENSE.txt": "/coworkadmin/static/js/2.98b583aa.chunk.js.LICENSE.txt"
+    "main.css": "/CoworkAdmin/static/css/main.bd02df63.chunk.css",
+    "main.js": "/CoworkAdmin/static/js/main.c08e0f70.chunk.js",
+    "main.js.map": "/CoworkAdmin/static/js/main.c08e0f70.chunk.js.map",
+    "runtime-main.js": "/CoworkAdmin/static/js/runtime-main.9e9de6c0.js",
+    "runtime-main.js.map": "/CoworkAdmin/static/js/runtime-main.9e9de6c0.js.map",
+    "static/css/2.8db874d2.chunk.css": "/CoworkAdmin/static/css/2.8db874d2.chunk.css",
+    "static/js/2.2c459b9a.chunk.js": "/CoworkAdmin/static/js/2.2c459b9a.chunk.js",
+    "static/js/2.2c459b9a.chunk.js.map": "/CoworkAdmin/static/js/2.2c459b9a.chunk.js.map",
+    "index.html": "/CoworkAdmin/index.html",
+    "precache-manifest.e0fd40ab042805d8572db0ce40cf86ba.js": "/CoworkAdmin/precache-manifest.e0fd40ab042805d8572db0ce40cf86ba.js",
+    "service-worker.js": "/CoworkAdmin/service-worker.js",
+    "static/css/2.8db874d2.chunk.css.map": "/CoworkAdmin/static/css/2.8db874d2.chunk.css.map",
+    "static/css/main.bd02df63.chunk.css.map": "/CoworkAdmin/static/css/main.bd02df63.chunk.css.map",
+    "static/js/2.2c459b9a.chunk.js.LICENSE.txt": "/CoworkAdmin/static/js/2.2c459b9a.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.c914e834.js",
+    "static/js/runtime-main.9e9de6c0.js",
     "static/css/2.8db874d2.chunk.css",
-    "static/js/2.98b583aa.chunk.js",
+    "static/js/2.2c459b9a.chunk.js",
     "static/css/main.bd02df63.chunk.css",
-    "static/js/main.767f15fc.chunk.js"
+    "static/js/main.c08e0f70.chunk.js"
   ]
 }
