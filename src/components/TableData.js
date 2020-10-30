@@ -269,7 +269,6 @@ function TableLine(props) {
                 <div className="text-center">
                     <Button variant="warning" className="mr-2" onClick={() => handleDisabledModif()}>{disabledModif ? "Modifier" : "Annuler"}</Button>
                     {!disabledModif && <Button variant="success" onClick={() => Update(form, props.data.handleSuccessModification, props.data.uri, props.data.id, handleDisabledModif)} disabled={(JSON.stringify(props.data.line) === JSON.stringify(form)) || Object.values(form).map(v => {let i = 0; if(v.trim() === "") i++; return i}).includes(1)}>Valider</Button>}
-                    {disabledModif && <Button variant="danger">Supprimer</Button>}
                     {props.data.uri === "user" && <Button className="ml-2" variant="info" onClick={() => history.push({pathname: '/details', state: { id: props.data.id }})}>Detail</Button>}
                 </div>
             </th>

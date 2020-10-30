@@ -11,6 +11,8 @@ const deleteUser = () => {
     deleteCookie("email", "/")
     deleteCookie("pwd", "/")
     deleteCookie("admin", "/")
+    deleteCookie("id_abonnement", "/")
+    deleteCookie("created_at", "/")
   }
 
 export function Deconnection(setConnected, history) {

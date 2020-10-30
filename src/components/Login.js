@@ -44,7 +44,7 @@ export function Login(props) {
                     {"L'authentification a échoué"}
                     </Alert></div>}
                     <div className="text-center pt-4">
-                        <Button className="mb-3" variant="primary" onClick={() => {Connection(email, md5(pwd).toString(), setIsLoading, setSuccess, props.data.history, props.data.setConnected, success)}} disabled={email.trim() === "" || pwd.trim() === ""}>
+                        <Button className="mb-3" variant="primary" onClick={() => {Connection(email, pwd, setIsLoading, setSuccess, props.data.history, props.data.setConnected, success)}} disabled={email.trim() === "" || pwd.trim() === ""}>
                             {isLoading && <Spinner
                                 as="span"
                                 animation="border"

@@ -99,6 +99,7 @@ export const deleteCookie = ( name, path ) => {
   avec engagement 8 mois:
   252€ TTC /mois</p>
   </>)
+  
 
 export function RealName(table, key) {
   console.log(table)
