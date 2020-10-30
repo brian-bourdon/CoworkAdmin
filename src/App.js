@@ -158,7 +158,7 @@ function App() {
 
   return (
     <div className="App">
-      <Router>
+      <Router basename={process.env.PUBLIC_URL}>
         <Route render={({ location, history }) => (
             <React.Fragment>
               {!getCookie("id") && <Route path="/" component={props => <Login data={{location, history, setConnected}}/>} />}
