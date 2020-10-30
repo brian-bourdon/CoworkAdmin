@@ -158,7 +158,7 @@ function App() {
 
   return (
     <div className="App">
-      <Router basename={window.location.pathname || ''}>
+      <Router basename={'/'}>
         <Route render={({ location, history }) => (
             <React.Fragment>
               {!getCookie("id") && <Route path="/" exact component={props => <Login data={{location, history, setConnected}}/>} />}
